@@ -146,7 +146,7 @@ func (s *GenSource) Certificate(ctx context.Context, last *Bundle) (Bundle, erro
 		if waitTime > 5*time.Minute {
 			// still valid, no need wait in the block to renew
 			certValid = true
-
+			waitTime = 5 * time.Minute
 		}
 
 		select {
@@ -154,9 +154,9 @@ func (s *GenSource) Certificate(ctx context.Context, last *Bundle) (Bundle, erro
 			s.Log.Debug("got a leadership change, returning")
 			return result, fmt.Errorf("lost leadership")
 
-		case <-time.After(5 * time.Minute):
+		case <-time.After(waitTime):
 			// Fall through, generate cert
-			s.Log.Info("after 5 minutes to check cert expired, generate cert now!!!!")
+			s.Log.Info(fmt.Sprintf("after %d to check cert expired, generate cert now!!!!", waitTime))
 
 		case <-ctx.Done():
 			return result, ctx.Err()
