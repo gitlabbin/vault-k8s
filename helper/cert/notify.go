@@ -60,13 +60,13 @@ func (n *Notify) Run() {
 			}
 		}
 
-		n.logger.Info("Start Certificate() <--")
+		n.logger.Info("start Certificate() <-")
 		next, err := n.source.Certificate(n.ctx, last)
 		if err != nil {
 			n.logger.Warn("error loading next cert", "error", err.Error())
 			continue
 		}
-		n.logger.Info("Finished Certificate() -->")
+		n.logger.Info("finished Certificate() ->")
 
 		once.Do(func() {
 			go func() {

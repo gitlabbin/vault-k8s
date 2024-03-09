@@ -383,7 +383,7 @@ func (c *Command) certWatcher(ctx context.Context, ch <-chan cert.Bundle, client
 
 		case <-time.After(interval):
 			// we are told to retry or periodically update
-			log.Info(fmt.Sprintf("certWatcher time %f minutes fired...", interval.Minutes()))
+			log.Info(fmt.Sprintf("certWatcher timer with %f minutes fired...", interval.Minutes()))
 		}
 
 		err := c.updateCertificate(ctx, clientset, bundle, webhooksCache, leaderElector, log)
