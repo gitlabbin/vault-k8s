@@ -142,15 +142,12 @@ func (s *GenSource) Certificate(ctx context.Context, last *Bundle) (Bundle, erro
 			waitTime = 1 * time.Millisecond
 		}
 
-		timer := time.NewTimer(waitTime)
-		defer timer.Stop()
-
 		select {
 		case <-leaderCh:
 			s.Log.Debug("got a leadership change, returning")
 			return result, fmt.Errorf("lost leadership")
 
-		case <-timer.C:
+		case <-time.After(waitTime):
 			// Fall through, generate cert
 
 		case <-ctx.Done():
@@ -328,6 +325,7 @@ func (s *GenSource) expiryWithin() time.Duration {
 }
 
 func (s *GenSource) generateCert() (string, string, error) {
+	s.Log.Info("generateCert()...")
 	// Create the private key we'll use for this leaf cert.
 	signer, keyPEM, err := s.privateKey()
 	if err != nil {
@@ -347,7 +345,7 @@ func (s *GenSource) generateCert() (string, string, error) {
 		BasicConstraintsValid: true,
 		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageKeyEncipherment,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
-		NotAfter:              time.Now().Add(s.expiry() * 365),
+		NotAfter:              time.Now().Add(s.expiry()),
 		NotBefore:             time.Now().Add(-1 * time.Minute),
 	}
 	for _, h := range s.Hosts {
