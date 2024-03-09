@@ -156,7 +156,7 @@ func (s *GenSource) Certificate(ctx context.Context, last *Bundle) (Bundle, erro
 
 		case <-time.After(waitTime):
 			// Fall through, generate cert
-			s.Log.Info(fmt.Sprintf("after %d to check cert expired, generate cert now!!!!", waitTime))
+			s.Log.Info(fmt.Sprintf("after %d to check cert expired, decide regen cert or not!!!!", waitTime))
 
 		case <-ctx.Done():
 			return result, ctx.Err()
@@ -165,7 +165,7 @@ func (s *GenSource) Certificate(ctx context.Context, last *Bundle) (Bundle, erro
 
 	if certValid {
 		s.Log.Info("cert still valid, no need regeneration now!!!!")
-		return result, nil
+		return result, fmt.Errorf("still valid cert, will wait to next run")
 	}
 
 	// Generate cert, set it on the result, and return
