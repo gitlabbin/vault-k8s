@@ -362,8 +362,7 @@ func (c *Command) certWatcher(ctx context.Context, ch <-chan cert.Bundle, client
 		panic(err)
 	}
 
-	defaultLoopTime := 1 * time.Hour // update after this amount of time even if nothing has happened
-	defaultLoopTime = 10 * time.Minute
+	const defaultLoopTime = 1 * time.Hour // update after this amount of time even if nothing has happened
 	expBackoff := backoff.NewExponentialBackOff()
 	interval := defaultLoopTime
 
