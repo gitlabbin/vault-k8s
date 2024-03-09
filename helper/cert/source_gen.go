@@ -130,6 +130,7 @@ func (s *GenSource) Certificate(ctx context.Context, last *Bundle) (Bundle, erro
 
 	// If we have a prior cert, we wait for getting near to the expiry
 	// (within 30 minutes arbitrarily chosen).
+	var certValid = false
 	if last != nil {
 		// We have a prior certificate, let's parse it to get the expiry
 		cert, err := parseCert(last.Cert)
@@ -142,17 +143,29 @@ func (s *GenSource) Certificate(ctx context.Context, last *Bundle) (Bundle, erro
 			waitTime = 1 * time.Millisecond
 		}
 
+		if waitTime > 5*time.Minute {
+			// still valid, no need wait in the block to renew
+			certValid = true
+
+		}
+
 		select {
 		case <-leaderCh:
 			s.Log.Debug("got a leadership change, returning")
 			return result, fmt.Errorf("lost leadership")
 
-		case <-time.After(waitTime):
+		case <-time.After(5 * time.Minute):
 			// Fall through, generate cert
+			s.Log.Info("after 5 minutes to check cert expired, generate cert now!!!!")
 
 		case <-ctx.Done():
 			return result, ctx.Err()
 		}
+	}
+
+	if certValid {
+		s.Log.Info("cert still valid, no need regeneration now!!!!")
+		return result, nil
 	}
 
 	// Generate cert, set it on the result, and return
@@ -312,7 +325,7 @@ func (s *GenSource) expiry() time.Duration {
 		return s.Expiry
 	}
 
-	return 24 * time.Hour
+	return 24 * time.Hour // 24 hours
 }
 
 func (s *GenSource) expiryWithin() time.Duration {
