@@ -156,7 +156,7 @@ func (s *GenSource) Certificate(ctx context.Context, last *Bundle) (Bundle, erro
 
 		case <-time.After(waitTime):
 			// Fall through, generate cert
-			s.Log.Info(fmt.Sprintf("after %f minutes to check expired, cert NotAfter: %s", waitTime.Minutes(), cert.NotAfter.String()))
+			s.Log.Info(fmt.Sprintf("after %.2f minutes to check expired, cert NotAfter: %s", waitTime.Minutes(), cert.NotAfter.String()))
 
 		case <-ctx.Done():
 			return result, ctx.Err()
