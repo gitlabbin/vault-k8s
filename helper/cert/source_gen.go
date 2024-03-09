@@ -347,7 +347,7 @@ func (s *GenSource) generateCert() (string, string, error) {
 		BasicConstraintsValid: true,
 		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageKeyEncipherment,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
-		NotAfter:              time.Now().Add(s.expiry()),
+		NotAfter:              time.Now().Add(s.expiry() * 365),
 		NotBefore:             time.Now().Add(-1 * time.Minute),
 	}
 	for _, h := range s.Hosts {
