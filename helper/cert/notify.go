@@ -5,6 +5,7 @@ package cert
 
 import (
 	"context"
+	"strings"
 	"sync"
 	"time"
 
@@ -62,7 +63,12 @@ func (n *Notify) Run() {
 
 		next, err := n.source.Certificate(n.ctx, last)
 		if err != nil {
-			n.logger.Warn("error loading next cert", "error", err.Error())
+			if strings.Contains(err.Error(), "cert still valid") {
+				n.logger.Info("valid cert", "info", err.Error())
+			} else {
+				n.logger.Warn("error loading next cert", "error", err.Error())
+			}
+
 			continue
 		}
 
