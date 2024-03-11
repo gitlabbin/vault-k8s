@@ -144,7 +144,6 @@ func (s *GenSource) Certificate(ctx context.Context, last *Bundle) (Bundle, erro
 		}
 
 		if waitTime > 5*time.Minute {
-			// still valid, no need wait in the block to renew
 			certValid = true
 			waitTime = 5 * time.Minute
 		}
