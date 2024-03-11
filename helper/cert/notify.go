@@ -5,12 +5,14 @@ package cert
 
 import (
 	"context"
-	"strings"
+	"errors"
 	"sync"
 	"time"
 
 	"github.com/hashicorp/go-hclog"
 )
+
+var CertificateActiveErr = errors.New("cert still valid, continue to next round")
 
 func NewNotify(ctx context.Context, newBundle chan<- Bundle, notifyOnce chan<- bool, source Source, logger hclog.Logger) *Notify {
 	return &Notify{
@@ -63,9 +65,10 @@ func (n *Notify) Run() {
 
 		next, err := n.source.Certificate(n.ctx, last)
 		if err != nil {
-			if strings.Contains(err.Error(), "cert still valid") {
+			switch err {
+			case CertificateActiveErr:
 				n.logger.Info("valid cert", "info", err.Error())
-			} else {
+			default:
 				n.logger.Warn("error loading next cert", "error", err.Error())
 			}
 

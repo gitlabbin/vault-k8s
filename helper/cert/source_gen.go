@@ -164,7 +164,7 @@ func (s *GenSource) Certificate(ctx context.Context, last *Bundle) (Bundle, erro
 	}
 
 	if certValid {
-		return result, fmt.Errorf("cert still valid, continue to next round")
+		return result, CertificateActiveErr
 	}
 
 	// Generate cert, set it on the result, and return
