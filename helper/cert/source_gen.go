@@ -162,7 +162,7 @@ func (s *GenSource) Certificate(ctx context.Context, last *Bundle) (Bundle, erro
 	}
 
 	if certValid {
-		return result, CertificateActiveErr
+		return result, CertificateValidErr
 	}
 
 	// Generate cert, set it on the result, and return
